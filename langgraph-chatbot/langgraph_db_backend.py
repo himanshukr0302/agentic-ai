@@ -4,7 +4,8 @@ from langgraph.graph import StateGraph,START, END
 from typing import TypedDict, Literal, Annotated
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import BaseMessage, HumanMessage
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
+import sqlite3
 
 load_dotenv()  
 api_key = os.getenv("GOOGLE_API_KEY")
@@ -30,7 +31,9 @@ def chat_node(state: ChatState) -> ChatState:
     # response store state
     return {'messages': [response]}
 
-checkpointer = MemorySaver()
+conn = sqlite3.connect(database='chatbot.db',check_same_thread=False)
+# checkpointer
+checkpointer = SqliteSaver(conn=conn)
 
 graph = StateGraph(ChatState)
 
@@ -43,3 +46,12 @@ graph.add_edge('chat_node',END)
 
 # compile
 chatbot = graph.compile(checkpointer=checkpointer)
+
+checkpointer.list(None)
+
+def retrieve_all_threads():
+    all_threads = set()
+    for checkpoint in checkpointer.list(None):
+        all_threads.add(checkpoint.config['configurable']['thread_id']) #type: ignore
+    
+    return list(all_threads)

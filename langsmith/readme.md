@@ -2,8 +2,6 @@
 
 This repository contains a series of Python scripts demonstrating various powerful features of the LangChain library, with deep integration for observability using LangSmith. The examples progress from basic chains to complex RAG pipelines, agents with custom tools, and stateful graphs using LangGraph.
 
-The primary project name used for tracing is **"RAG PDF App"**.
-
 ## Features Demonstrated
 
   * **RAG (Retrieval-Augmented Generation)**: Building pipelines to chat with PDF documents.
